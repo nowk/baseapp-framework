@@ -2,7 +2,7 @@ Please Visit -
 
 http://code.google.com/p/baseappframework/ 
 
-This is jsut a mirror.
+This is just a mirror.
 
 
 License: MIT License (view LICENSE)

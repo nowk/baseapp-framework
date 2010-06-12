@@ -26,6 +26,7 @@ include BASEAPP_PATH.'baseapp.php';
 /* Start Execution , setup envoirnment and execute */
 ob_start("Debugger::customErrorHandler");
 $base = new Dispatcher();
-include APP_PATH.'app_config.php'; 
+include CORE_PATH.'config/boot.php'; 
+include CORE_PATH.'config/routes.php';
 $base->dispatch(isset($requestedURL)?$requestedURL:null);
 ob_end_flush();

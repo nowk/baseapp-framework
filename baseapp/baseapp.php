@@ -3,7 +3,7 @@
  * Short description for file.
  *
  * Long description for file.
- * 
+ *
  * @version     $Id: baseapp.php 7 2009-03-04 22:18:40Z vikaspatial1983 $
  * @package     BaseApp Framework (v0.1)
  * @link        http://code.google.com/p/baseappframework/
@@ -18,17 +18,17 @@ define('NL',"\n");
 define('APP_DIR', 'app/');
 define('APP_PATH',  CORE_PATH . APP_DIR);
 define('ROOT',CORE_PATH);
-define('WEBROOT_DIR', APP_PATH.'webroot/');
+define('WEBROOT_DIR', CORE_PATH.'public/');
 define('WWW_ROOT', ROOT . DS . APP_DIR . DS . WEBROOT_DIR . DS);
 
 define('START_TIME',microtime(true));
 
-// Setup Time 
+// Setup Time
 date_default_timezone_set('UTC');
 define('TIME', time());
 
-
-set_magic_quotes_runtime(0);
+# 
+define('CONFIG_FILE',CORE_PATH.'/config/config.php');
 
 /**
  * Base of the framework
@@ -40,7 +40,7 @@ class Base
 
     public function Base()
     {
-        self::$instance =& $this;
+        self::$instance = $this;
     }
 
     public static function &getInstance()
@@ -124,7 +124,7 @@ class Dispatcher extends Base
     function dispatch($requestedURL=null)
     {
         if ($requestedURL === null) {
-            
+
             if (Configure::read('url_sef'))
             {
                 $url = parse_url(SITE_URL);
@@ -284,7 +284,7 @@ class Dispatcher extends Base
 }
 
 /**
- * View Class 
+ * View Class
  *
  */
 
@@ -405,7 +405,7 @@ class View
         //beforeRender
 
         $this->output = $this->render($view, $vars);
-        
+
         echo $this->output;
 
     }
@@ -505,7 +505,7 @@ class Controller
                 }
 
             }
-            
+
         }
 
 
@@ -536,11 +536,11 @@ class Controller
 
         if (!empty($layout)) {
 
-            if (is_file($layout)) 
+            if (is_file($layout))
             {
-            	$this->layout = $layout;
+              $this->layout = $layout;
             }
-            else 
+            else
             {
                 $this->layout = 'layouts/'.$layout;
             }
@@ -622,7 +622,7 @@ class Controller
 
                 if ($fields)
                 {
-                    foreach ($retData as $var=>$val)	{
+                    foreach ($retData as $var=>$val)  {
                         if (in_array($var,$fields)) {
                             $newRetData[$var] = $val;
                         }
@@ -647,7 +647,7 @@ class Controller
 } // end Controller class
 
 /**
- * App controller implementation 
+ * App controller implementation
  */
 
 $app_controlller_file = APP_PATH.'app_controller.php';
@@ -673,7 +673,7 @@ if ( file_exists($app_helper_file))
 }
 else
 {
-    // Empty App Controler Class
+    // Empty App Helper Class
     class AppHelper
     {
 
@@ -681,7 +681,7 @@ else
 }
 
 /**
- * Very Basic Model class mainly for MySQL with basic CRUD 
+ * Very Basic Model class mainly for MySQL with basic CRUD
  *
  */
 
@@ -711,15 +711,15 @@ class Model {
     {
         $this->name     = ($name)?$name:get_class($this);
         $this->dbmodel  = Inflector::underscore($this->name);
-        
-        if(!$this->useTable) 
+
+        if(!$this->useTable)
         {
             $this->useTable = Inflector::plural($this->dbmodel);
         }
 
         $this->db       = getInstance()->Controller->db;
 
-        if (DB_PREFIX) 
+        if (DB_PREFIX)
         {
             $this->useTable = DB_PREFIX.$this->useTable;
         }
@@ -730,8 +730,8 @@ class Model {
     {
 
         $rdata = array();
-        
-        if (!$this->metaColumns) 
+
+        if (!$this->metaColumns)
         {
             $this->metaColumns     = $this->db->MetaColumns($this->useTable);
             Debugger::sqlLog("MetaCoulumns() for $this->useTable",$this->metaColumns);
@@ -740,7 +740,7 @@ class Model {
             {
                 throw new Exception("Table '{$this->useTable}' Columns could not be queried!");
             }
-            
+
             foreach ($this->metaColumns as $field)
             {
                 $this->metaColumnNames[] = $field->name;
@@ -819,7 +819,7 @@ class Model {
         // get insert ID
 
         if($this->db->Insert_ID() && $return)
-        {   
+        {
             $this->recursive = false;
             return $this->find('first',array('conditions'=>array($this->name.'.'.$this->primaryKey => $this->db->Insert_ID())));
         }
@@ -861,7 +861,7 @@ class Model {
         }
 
         $sql_where = $this->_where($conditions);
-        
+
         $this->lastQuery = "UPDATE $this->useTable AS $this->name SET $update $sql_where";
 
         $this->query($this->lastQuery);
@@ -880,13 +880,13 @@ class Model {
 
     function _where($conditions)
     {
-        
+
         $rwhere = '';
-        
-        if (is_numeric($conditions)) 
+
+        if (is_numeric($conditions))
         {
-            $rwhere = 'WHERE '.$this->name.'.'.$this->primaryKey.' = '.__q($conditions);	
-        }        
+            $rwhere = 'WHERE '.$this->name.'.'.$this->primaryKey.' = '.__q($conditions);
+        }
         else if (is_array($conditions) && !empty($conditions))
         {
             foreach ($conditions as $var=>$val)
@@ -915,14 +915,14 @@ class Model {
         return $rwhere;
 
     }
-    
+
     function _whereFields($fields = false)
     {
         if(!$fields)
         {
             return ' * ';
         } elseif (is_string($fields)) {
-        	return $fields;
+          return $fields;
         } elseif (is_array($fields))  {
             return implode(', ',$fields);
         }
@@ -933,15 +933,15 @@ class Model {
 
         doCallback('beforeDelete',$this);
 
-        // Do Orm processing     
-                
-        $dataArray = $this->find('all',array('conditions'=>$conditions));        
+        // Do Orm processing
+
+        $dataArray = $this->find('all',array('conditions'=>$conditions));
 
         $this->processORM($dataArray,'delete');
 
         $sql_where = $this->_where($conditions);
         $sql_where = str_replace("$this->name.",'',$sql_where);
-        
+
         $this->lastQuery = "DELETE FROM $this->useTable $sql_where";
         $this->query($this->lastQuery);
 
@@ -957,26 +957,26 @@ class Model {
     function field($name,$conditions = false,$order = false)
     {
         $result = $this->find('first',array('conditions'=>$conditions,'order'=>$order));
-        
+
         if ($result) {
-            return $result[$this->name][$name];	   
+            return $result[$this->name][$name];
         }
-        
+
         return false;
     }
-    
+
     function find($type = 'first' , $params = array())
     {
         $retArray = false;
-        
+
         $params['type'] = $type;
-        
+
         $params = doCallback('beforeFind',$this,$params);
-        
+
         if (!$params) {
-        	return false;
+          return false;
         }
-        
+
         switch ($params['type'])
         {
             case 'all':
@@ -984,27 +984,27 @@ class Model {
                     $retArray = $this->_find($params);
                 }
             break;
-            
-            case 'count':           
+
+            case 'count':
             {
                 $params['recursive'] = 0;
                 $this->_find($params);
                 return $this->getNumRows();
             }
             break;
-            
+
             case 'list':
                 {
                     //
                     if (isset($params['fields'][2])) {
-                    	$params['group'] = $params['fields'][2];
+                      $params['group'] = $params['fields'][2];
                     }
-                    
+
                     $result = $this->_find($params);
 
                     if($this->_result && is_array($this->_resultArray))
                     {
-                                                
+
                         $key   = str_replace($this->name.'.','',$params['fields'][0]);
                         $value = str_replace($this->name.'.','',isset($params['fields'][1])?$params['fields'][1]:'');
 
@@ -1012,10 +1012,10 @@ class Model {
                         {
                             $retArray[$row[$key]] = empty($value)?$row[$key]:$row[$value];
                         }
-                    }     
+                    }
                 }
             break;
-            
+
             default:
             case 'first':
                 {
@@ -1029,19 +1029,19 @@ class Model {
 
                 }
                 break;
-            
+
         }
-        
+
         $retArray = doCallback('afterFind',$this,$retArray);
 
         return $retArray;
-        
+
     }
-    
-    function _find($params) 
-    {        
+
+    function _find($params)
+    {
         extract($params);
-        
+
         $conditions = $this->_where(isset($conditions)?$conditions:false);
         $fields     = $this->_whereFields(isset($fields)?$fields:false);
         $group      = isset($group)?"GROUP BY $group":'';
@@ -1049,59 +1049,59 @@ class Model {
         $page       = isset($page)?$page:1;
         $order      = isset($order)?"ORDER BY $order":'';
         $this->recursive = isset($recursive)?$recursive:$this->recursive;
-        
+
         $offset = ($page - 1) * $limit;
-             
+
         $this->lastQuery = "SELECT $fields FROM $this->useTable AS $this->name $conditions $group $order";
-        
+
         $this->_result =  $this->db->SelectLimit($this->lastQuery,$limit,$offset);
-        
+
         Debugger::sqlLog($this->lastQuery." ( LIMIT: $limit PAGE: $page) ",$this->_result);
-        
+
         // Format into Model Array
         $retArray = false;
 
         if ($this->_result) {
-            
+
             $this->_resultArray =  $this->_result->GetArray();
-            
+
             if (is_array($this->_resultArray))
             {
                 foreach ($this->_resultArray as $row)
                 {
                     $retArray[] = array($this->name => $row);
                 }
-                
+
                 // Process Relations
                 $retArray = $this->processORM($retArray);
             }
-                      
+
         }
 
-        return $retArray;      
-        
+        return $retArray;
+
     }
-    
+
     /**
      * Magic functions
      */
-    
+
     function __call($name,$param)
     {
-        if (strstr($name,'findAllBy')) 
+        if (strstr($name,'findAllBy'))
         {
             $field = str_replace('findAllBy','',$name);
             return $this->find('all',array('conditions'=>array(Inflector::underscore($field)=>$param[0])));
-        } 
-        elseif (strstr($name,'findBy')) 
+        }
+        elseif (strstr($name,'findBy'))
         {
             $field = str_replace('findBy','',$name);
             return $this->find('first',array('conditions'=>array(Inflector::underscore($field)=>$param[0])));
         }
-        
+
         throw new Exception("Unknown function {$name} called on Model");
     }
-    
+
     function getLastInsertID()
     {
         return $this->db->Insert_ID();
@@ -1135,13 +1135,13 @@ class Model {
 
     function query($sql)
     {
-        
+
         $this->lastQuery = $sql;
-        
+
         $this->_result = $this->db->Execute($this->lastQuery);
-        
+
         Debugger::sqlLog($this->lastQuery,$this->_result);
-        
+
         // Format into Model Array
         $retArray = false;
 
@@ -1150,9 +1150,9 @@ class Model {
         }
 
         return $retArray;
-        
-        
-        
+
+
+
 
     }
 
@@ -1168,7 +1168,7 @@ class Model {
             $base = &getInstance();
 
             $v = $base->Controller->Validation;
-            
+
             $v->Validation($this,$data);
 
             $vrules = array();
@@ -1190,9 +1190,9 @@ class Model {
                 }
 
             }
-            
+
             if (count($vrules) ==0) {
-            	return true;
+              return true;
             }
             $v->setRules($vrules);
             $v->setFields($vfields);
@@ -1201,22 +1201,22 @@ class Model {
         }
         return true;
     }
-    
+
     function _findORM($meta,$key,$type = 'select',$multiple = false)
     {
         extract($meta);
-        
+
         // $className ( always set )
         $classObj = new $className();
-                
+
         $foreignKey = isset($foreignKey)?$foreignKey:$classObj->name.'.'.Inflector::underscore($this->name).'_id';
-        
+
         $meta['conditions'] = array_merge(isset($conditions)?$conditions:array(),array($foreignKey=>$key));
 
         if ($type == 'select') {
             $meta['recursive'] = $this->recursive - 1;
             if ($multiple)
-            {   
+            {
                 $classObj->find('all',$meta);
                 return $classObj->_resultArray;
             }
@@ -1229,9 +1229,9 @@ class Model {
         {
             return $classObj->delete($conditions);
         }
-            
+
     }
-    
+
     function _loopORM($models,$dataArray,$type = 'select',$multiple=false,$child = false)
     {
         $models = (is_array($models))?$models:array($models=>array());
@@ -1242,68 +1242,68 @@ class Model {
             {
                 $meta['className'] = isset($meta['className'])?$meta['className']:$model;
                 if ($multiple) {
-                	   $dataArray[$i][$model] = $this->_findORM($meta,$dataArray[$i][$this->name][$this->primaryKey],$type,true);
+                     $dataArray[$i][$model] = $this->_findORM($meta,$dataArray[$i][$this->name][$this->primaryKey],$type,true);
                 } else {
                     if ($child) {
                         $fKey    = isset($meta['foreignKey'])?$meta['foreignKey']:Inflector::underscore($meta['className']).'_id';
                         $meta['foreignKey']    = $meta['className'].'.id';
-                    	$dataArray[$i][$model] = $this->_findORM($meta,$dataArray[$i][$this->name][$fKey],$type);
+                      $dataArray[$i][$model] = $this->_findORM($meta,$dataArray[$i][$this->name][$fKey],$type);
                     } else {
                         $dataArray[$i][$model] = $this->_findORM($meta,$dataArray[$i][$this->name][$this->primaryKey],$type);
                     }
                 }
-                
+
             }
         }
         return $dataArray;
-        
+
     }
-    
+
     function processORM($dataArray,$type = 'select')
     {
         if (!$this->recursive) {
-        	return $dataArray;
+          return $dataArray;
         }
-        
-         // hasOne 
-        if (isset($this->hasOne) && !empty($this->hasOne)) 
+
+         // hasOne
+        if (isset($this->hasOne) && !empty($this->hasOne))
         {
             $dataArray = $this->_loopORM($this->hasOne,$dataArray,$type,false);
-        }   
+        }
 
-        // belongTo 
-        if (isset($this->belongsTo) && !empty($this->belongsTo) && $type=='select') 
+        // belongTo
+        if (isset($this->belongsTo) && !empty($this->belongsTo) && $type=='select')
         {
             $dataArray = $this->_loopORM($this->belongsTo,$dataArray,$type,false,true);
-        }   
+        }
 
         // hasMany()
-        if (isset($this->hasMany) && !empty($this->hasMany)) 
-        {   
+        if (isset($this->hasMany) && !empty($this->hasMany))
+        {
             $dataArray = $this->_loopORM($this->hasMany,$dataArray,$type,true);
-        }        
-        
+        }
+
         return $dataArray;
     }
-    
+
     /**
-     * Callbacks 
+     * Callbacks
      */
-    
+
     function beforeFind($queryData)
     {
         return $queryData;
     }
-    
+
     function afterFind($retArray = array())
     {
         return $retArray;
     }
-    
+
 }
 
 /**
- * App Model implementation 
+ * App Model implementation
  */
 
 if ( file_exists(APP_PATH.'app_model.php'))
@@ -1327,8 +1327,8 @@ else
 
 
 /**
- * Session 
- * 
+ * Session
+ *
  * This class allows you to use session variables.
  */
 
@@ -1373,9 +1373,9 @@ class Session
 
         Session::write('flash_message',$messages);
         Session::write('flash_type',$type);
-        
+
         if ($return) {
-        	return SEssion::flash();
+          return SEssion::flash();
         }
     }
 
@@ -1455,8 +1455,6 @@ class Cookie
  *
  */
 
-define('CONFIG_FILE',APP_PATH.'/data/config.php');
-
 class Configure
 {
 
@@ -1525,7 +1523,7 @@ class Configure
         fclose($fp);
         return true;
     }
-    
+
     function __get($var)
     {
         return Configure::read($var);
@@ -1633,7 +1631,7 @@ class Debugger {
     public static function &getInstance()
     {
         if (!self::$instance) {
-            self::$instance =& new Debugger();
+            self::$instance = new Debugger();
         }
         return $instance;
     }
@@ -1643,7 +1641,7 @@ class Debugger {
         if (DEBUG)
         {
             $buffer = "";
-            
+
             if(defined('FIREBUG')) {
                 $buffer .= 'console.group("'.$label.'");'.NL;
             } else {
@@ -1685,25 +1683,25 @@ class Debugger {
             }
 
             if ($return) return $buffer;
-            
+
             if (defined('FIREBUG')) {
                 echo  '<script type="text/javascript">'.NL.$buffer.'</script>'.NL;
             } else {
                 echo $buffer;
             }
-            
+
         }
     }
 
     public static function dumpInfo($return = false)
     {
         if ( !DEBUG ) return;
-        
-        // Quick Info 
-        
+
+        // Quick Info
+
         $buffer= sprintf('Execution Time : %0.4f sec, Memory Used : %f MB',microtime(true) - START_TIME, memory_get_usage() / (1024 * 1024) );
-        
-        
+
+
         if(defined('FIREBUG')) {
             $buffer = 'console.info("'.$buffer.'");'.NL;
         } else {
@@ -1732,11 +1730,11 @@ class Debugger {
             if ( ! empty($_COOKIE)) $buffer .= self::dump($_COOKIE, 'COOKIE',true);
             $buffer .= self::dump($_SERVER, 'SERVER',true);
         }
-        
+
         if(defined('FIREBUG')) {
             $buffer = '<script type="text/javascript">if (("console" in window) && ("firebug" in console)) {'.NL.$buffer.'}</script>'.NL;
-        } 
-        
+        }
+
         if ($return) return $buffer;
 
         echo $buffer;
@@ -1774,7 +1772,7 @@ class Debugger {
             Debugger::errorHandler(1,$match[1],$match[2],$match[3]);
             return preg_replace('%<br />[\r\n]+<b>Fatal error</b>:\s+(.+) in <b>(.+)</b> on line <b>([0-9]+)</b><br />%s',Debugger::dumpInfo(true),$buffer);
         }
-        
+
         return $buffer.Debugger::dumpInfo(true);
     }
 
@@ -1795,7 +1793,7 @@ class Debugger {
                 $var = false;
                 $val = false;
 
-                
+
 
                 $args = array();
                 if ( ! empty($trace['args'])) {
@@ -1812,7 +1810,7 @@ class Debugger {
                         }
                     }
                 }
-               
+
                 $message = __('%s::%s(%s) on line %s in file %s',(isset($trace['class'])?$trace['class']:''),$trace['function'],implode(', ',$args),$trace['line'],defined('FIREBUG')?addslashes($trace['file']):$trace['file']);
 
                 $traceStack[]=array('type'=>'info','message'=>$message);
@@ -1822,7 +1820,7 @@ class Debugger {
 
         $message = sprintf('Exception Thrown on line %s in file %s',$e->getLine(),defined('FIREBUG')?addslashes($e->getFile()):$e->getFile());
         $traceStack[] = array('type'=>'error','message'=>$message);
-       
+
         self::dump($traceStack,$label);
     }
 
@@ -1952,20 +1950,20 @@ function getURL($link = false,$linkName = false ,$linkImage = false,$imageOnly =
     $olink = $link;
     $onClick = "";
     $target  = "_self";
-    
-    if (!$link) 
+
+    if (!$link)
     {
         $link = BASE_URL;
-    } 
+    }
     else if ($link[0] == '#') {
         $onClick = substr($link,1);
         if (empty($onClick)) {
-        	$onClick = 'return false;';
+          $onClick = 'return false;';
         }
-        
+
         $onClick = 'onclick="'.$onClick.'"';
         $link = '#';
-        
+
     }
     else if (!strstr($link,'http:')) {
         $link = ($link[0] == '/')?substr($link,1):$link;
@@ -1974,16 +1972,16 @@ function getURL($link = false,$linkName = false ,$linkImage = false,$imageOnly =
     elseif (strstr($link,'http://'))
     {
         // Open in new page
-        $target = "_blank";        
+        $target = "_blank";
     }
-        
+
     $class = ($class)?" class=\"$class\" ":'';
-    
-    
+
+
     if ( $linkImage || $linkName )
     {
-        // check if icon       
-        
+        // check if icon
+
         $target = ($target == '_self')?'':"target =\"$target\"";
         return "<a href=\"$link\" title=\"$linkName\" $onClick $class $target>".(($linkImage)?"<img src=\"$linkImage\" alt=\"$linkName\" border=0 >":'').(($imageOnly && $linkImage)?'':$linkName)."</a>";
     }
@@ -2109,7 +2107,7 @@ function pageNotFound()
 }
 
 /**
- * This function will strip slashes if magic quotes is enabled so 
+ * This function will strip slashes if magic quotes is enabled so
  * all input data ($_GET, $_POST, $_COOKIE) is free of slashes
  */
 function fix_input_quotes()
@@ -2120,7 +2118,7 @@ function fix_input_quotes()
             if (!is_array($val)) {
                 $in[$k][$key] = stripslashes($val); continue;
             }
-            $in[] =& $in[$k][$key];
+            $in[] = $in[$k][$key];
         }
     }
     unset($in);

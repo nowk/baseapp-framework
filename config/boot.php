@@ -50,7 +50,7 @@ define('DEBUG',isset($config['debug'])?$config['debug']:1);
 define('BASE_URL',  SITE_URL.(Configure::read('url_sef')?'':'?/'));
 
 // The path to various media
-define('WEBROOT_URL', SITE_URL .'app/webroot/');
+define('WEBROOT_URL', SITE_URL .'public/');
 
 // Custom routing as required by application 
-$base->addRoute('/admin/:any','/admin/$1');
+# view /config/routes.php

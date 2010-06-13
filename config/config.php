@@ -3,6 +3,6 @@
 $config = array(
   'debug'=>3,
 
-  'php_activerecord' => CORE_PATH.'config'.DS.'database.php',
-  'ar_environment'   => 'development'
+  'database_config' => CORE_PATH.'config'.DS.'database.php',
+  'environment'     => 'development'
 );

@@ -11,7 +11,7 @@ ActiveRecord\Config::initialize(function($cfg)
 
     # set the environment state
     # $cfg->set_default_connection('development');
-    $cfg->set_default_connection(Configure::read('ar_environment'));
+    $cfg->set_default_connection(Configure::read('environment'));
   }
 );
 

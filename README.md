@@ -9,6 +9,7 @@ For those smaller, non-Ruby based apps, that have to be in PHP.
 
 - Removed/Updated any PHP 5.3 deprecations
 - switched up the folder structure a bit and moved the config file out to a really obvious place `/config`
+- `/app/webroot`, the public directory, was moved outside and renamed `/public`
 - Separated off the Routes to their own file `/config/routes.php`
 - added in [ PHP-ActiveRecord ](http://github.com/kla/php-activerecord) to mimic Rails ActiveRecord functionality (no migrations though) via BaseApp's `/app/app_model.php` option
 

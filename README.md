@@ -23,6 +23,7 @@ Requires PHP 5.3+ for PHP-ActiveRecord use.
 ###To-Do
 
 - Make it a bit more CakePHP compliant, since the original is supposedly 80% Cake like
+- Instructions and stuff of that nature
 - Whatever else that comes my way
 
 ---

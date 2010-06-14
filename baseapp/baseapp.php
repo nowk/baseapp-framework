@@ -328,7 +328,7 @@ class View
             {
                 $viewPath = $path.(strstr($file,'layouts/') || strstr($file,'views/')?'':'views/').(strstr($file,'.php')?$file:$file.'.php');
 
-                echo $viewPath.'<br />';
+                # echo $viewPath.'<br />';
 
                 if (is_file($viewPath)) {
                     $retFile = $viewPath;

@@ -1967,7 +1967,7 @@ function getURL($link = false,$linkName = false ,$linkImage = false,$imageOnly =
     }
     else if (!strstr($link,'http:')) {
         $link = ($link[0] == '/')?substr($link,1):$link;
-        $link = BASE_URL.$link.URL_SUFFIX;
+        $link = BASE_URL.$link; # .URL_SUFFIX; # TODO figure out what URL_SUFFIX does exactly...
     }
     elseif (strstr($link,'http://'))
     {
